@@ -20,7 +20,7 @@ jobs:
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: admin
-          POSTGRES_DB: postgres_go
+          POSTGRES_DB: bank_go
         ports:
           - 5432:5432
         options: >-
