@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/careless3/bank_go/api"
@@ -19,8 +20,14 @@ func main() {
 	if err != nil {
 		log.Fatal("no connect", err)
 	}
+
 	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	fmt.Println(config)
+
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot create server:", err)
+	}
 	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server", err)
