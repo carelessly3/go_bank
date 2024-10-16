@@ -19,7 +19,7 @@ import (
 )
 
 func TestGetAccountAPI(t *testing.T) {
-	user := randomUser()
+	user, _ := randomUser(t)
 	account := randomAccount(user.Username)
 
 	testCases := []struct {
@@ -33,7 +33,7 @@ func TestGetAccountAPI(t *testing.T) {
 			name:      "OK",
 			accountID: account.ID,
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "user", time.Minute)
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, account.Owner, time.Minute)
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -126,15 +126,18 @@ func randomAccount(owner string) db.Account {
 	}
 }
 
-func randomUser() db.User {
-	return db.User{
-		Username:          util.RandomOwner(),
-		HashedPassword:    util.RandomString(32),
-		Email:             util.RandomEmail(),
-		FullName:          util.RandomString(6),
-		CreatedAt:         time.Now(),
-		PasswordChangedAt: time.Now(),
+func randomUser(t *testing.T) (user db.User, password string) {
+	password = util.RandomString(6)
+	hashedPassword, err := util.HashPassword(password)
+	require.NoError(t, err)
+
+	user = db.User{
+		Username:       util.RandomOwner(),
+		HashedPassword: hashedPassword,
+		FullName:       util.RandomOwner(),
+		Email:          util.RandomEmail(),
 	}
+	return
 }
 
 func requireBodyMatchAccount(t *testing.T, body *bytes.Buffer, account db.Account) {
