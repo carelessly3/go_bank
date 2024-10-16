@@ -1,5 +1,5 @@
 postgres:
-	docker run --name postgres_go -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -d postgres
+	docker run --name postgres_go --netowork bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -d postgres
 createdb:
 	docker exec -it postgres_go createdb --username=root --owner=root bank_go
 dropdb:
